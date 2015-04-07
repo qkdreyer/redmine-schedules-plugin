@@ -9,14 +9,14 @@
         <table class="cal schedule schedule_entry_grid">
             <thead>
                 <tr>
-                    <% @calendar.days.each do |day| %>
+                    <% @days.each do |day| %>
                         <th><%= day_name(day.wday) %></th>
                     <% end %>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <% @calendar.days.each do |day| %>
+                    <% @days.each do |day| %>
                         <td data-wday="<%= day.wday %>">
                             <% hours = @schedule_default.weekday_hours[day.wday] && @schedule_default.weekday_hours[day.wday] > 0 ? @schedule_default.weekday_hours[day.wday] : "" %>
                             <%= text_field "schedule_default", day.wday, :size => 3, :value => hours %>

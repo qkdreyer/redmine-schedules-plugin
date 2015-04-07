@@ -79,7 +79,10 @@ class SchedulesController < ApplicationController
         @schedule_default ||= ScheduleDefault.new
         @schedule_default.weekday_hours ||= [0,0,0,0,0,0,0]
         @schedule_default.user_id = @user.id
+        
+        @period = 'week'
         @calendar = get_calendar
+        @days = @calendar.days.slice(0, 5);
     end
 
 
