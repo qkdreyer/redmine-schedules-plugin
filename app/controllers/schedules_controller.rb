@@ -1,7 +1,6 @@
 class SchedulesController < ApplicationController
     unloadable
 
-
     ############################################################################
     # Initialization
     ############################################################################
@@ -16,6 +15,7 @@ class SchedulesController < ApplicationController
 
     # Included helpers
     include SchedulesHelper
+    include CalendarHelper
     include SortHelper
     helper :sort
 
@@ -73,14 +73,13 @@ class SchedulesController < ApplicationController
         index
     end
 
-
     # Edit the current user's default availability
     def default
         @schedule_default = ScheduleDefault.find_by_user_id(@user)
         @schedule_default ||= ScheduleDefault.new
         @schedule_default.weekday_hours ||= [0,0,0,0,0,0,0]
         @schedule_default.user_id = @user.id
-        @calendar = Redmine::Helpers::Calendar.new(Date.today, current_language, :week)
+        @calendar = get_calendar
     end
 
 
@@ -99,7 +98,7 @@ class SchedulesController < ApplicationController
         @indexed_users = @users.index_by { |user| user.id }
         @defaults = get_defaults(user_ids).index_by { |default| default.user_id }
         @defaults.delete_if { |user_id, default| !default.weekday_hours.detect { |weekday| weekday != 0 }}
-        @calendar = Redmine::Helpers::Calendar.new(Date.today, current_language, :week)
+        @calendar = get_calendar
     end
 
 
@@ -108,6 +107,11 @@ class SchedulesController < ApplicationController
     ############################################################################
     private
 
+    # Return a calendar instance
+    def get_calendar(date = Date.today)
+        calendar = CalendarHelper::WeekCalendar.new(date, current_language, @period.to_sym)
+        return calendar
+    end
 
     # Given a specific date, show the projects and users that the current user is
     # allowed to see and provide edit access to those permission is granted to.
@@ -120,12 +124,12 @@ class SchedulesController < ApplicationController
             if flash[:warning].nil?
                 flash[:notice] = l(:label_schedules_updated)
                 if params[:commit] == l(:button_save_next)
-                    redirect_to({:action => 'edit', :date => Date.parse(params[:date]) + 7})
+                    redirect_to({:action => 'edit', :date => Date.parse(params[:date]) + 7, :period => @period})
                 else
-                    redirect_to({:action => 'index', :date => Date.parse(params[:date])})
+                    redirect_to({:action => 'index', :date => Date.parse(params[:date]), :period => @period})
                 end
             else
-                redirect_to({:action => 'edit', :date => Date.parse(params[:date])})
+                redirect_to({:action => 'edit', :date => Date.parse(params[:date]), :period => @period})
             end
         end
     end
@@ -239,11 +243,14 @@ class SchedulesController < ApplicationController
             # Determine the user's current availability default
             @schedule_default = ScheduleDefault.find_by_user_id(@user.id)
             @schedule_default ||= ScheduleDefault.new
+
             @schedule_default.weekday_hours ||= [0,0,0,0,0,0,0]
             @schedule_default.user_id = @user.id
 
             # Save the new default
-            @schedule_default.weekday_hours = params[:schedule_default].sort.collect { |a,b| [b.to_f, 0.0].max }
+            params[:schedule_default].each do |day, avail|
+                @schedule_default.weekday_hours[day.to_i] = [avail.to_f, 0.0].max
+            end
             @schedule_default.save
 
             # Inform the user that the update was successful
@@ -261,6 +268,9 @@ class SchedulesController < ApplicationController
             params[:fill_total].delete_if { |user_id, fill_total| fill_total.to_f == 0 }
             defaults = get_defaults(params[:fill_total].collect { |user_id, fill_total| user_id.to_i }).index_by { |default| default.user_id }
 
+            nb_days = 0
+            total_hours = 0
+
             # Fill the schedule of each specified user
             params[:fill_total].each do |user_id, fill_total|
 
@@ -269,9 +279,10 @@ class SchedulesController < ApplicationController
                 user_id = user_id.to_i
                 default = defaults[user_id].weekday_hours
                 date_index = @date
+                nb_weeks = params[:filling_for_weeks].to_i || 52 # a year
 
                 # Iterate through days until we've filled up enough
-                while hours_remaining > 0
+                while date_index - @date < nb_weeks * 7 && hours_remaining > 0
                     fill_hours = params[:fill_entry][user_id.to_s][date_index.wday.to_s].to_f
                     if fill_hours > 0 && default[date_index.wday] > 0
 
@@ -299,6 +310,9 @@ class SchedulesController < ApplicationController
                             new_entry.hours += project_entry.hours unless project_entry.nil?
                             save_entry(new_entry, project_entry, @project.id)
                             hours_remaining -= available_hours
+
+                            nb_days++
+                            total_hours += available_hours
                         end
                     end
                     date_index += 1
@@ -306,7 +320,10 @@ class SchedulesController < ApplicationController
             end
 
             # Inform the user that the update was successful
-            flash[:notice] = l(:notice_successful_update)
+            if nb_days > 0
+                flash[:notice] = l(:notice_successful_update) + " (nb_days: #{nb_days}, total_hours: #{total_hours})";
+            end
+
             redirect_to({:action => 'index', :project_id => @project.id})
         end
     end
@@ -338,8 +355,10 @@ class SchedulesController < ApplicationController
 
     # Get schedule defaults for the specified users
     def get_defaults(user_ids = nil)
+        restrictions = nil
         restrictions = "user_id IN ("+@users.collect {|user| user.id.to_s }.join(',')+")" unless @users.empty?
         restrictions = "user_id IN ("+user_ids.join(',')+")" unless user_ids.nil?
+        restrictions = "1=1" unless restrictions.nil?
         ScheduleDefault.find(:all, :conditions => restrictions)
     end
 
@@ -360,14 +379,14 @@ class SchedulesController < ApplicationController
 
         # Generate and return the availabilities based on the above variables
         availabilities = Hash.new
-        (startdt..enddt).each do |day|
+        @calendar.days.each do |day|
             availabilities[day] = Hash.new
             @users.each do |user|
                 availabilities[day][user.id] = 0
-                availabilities[day][user.id] = defaults_by_user[user.id].weekday_hours[day.wday] unless defaults_by_user[user.id].nil?
-                availabilities[day][user.id] -= entries_by_user[user.id][day].collect {|entry| entry.hours }.sum unless entries_by_user[user.id].nil? || entries_by_user[user.id][day].nil?
-                availabilities[day][user.id] -= closed_entries_by_user[user.id][day].hours unless closed_entries_by_user[user.id].nil? || closed_entries_by_user[user.id][day].nil?
-                availabilities[day][user.id] = [0, availabilities[day][user.id]].max
+                #availabilities[day][user.id] = defaults_by_user[user.id].weekday_hours[day.wday] unless defaults_by_user[user.id].nil?
+                #availabilities[day][user.id] -= entries_by_user[user.id][day].collect {|entry| entry.hours }.sum unless entries_by_user[user.id].nil? || entries_by_user[user.id][day].nil?
+                #availabilities[day][user.id] -= closed_entries_by_user[user.id][day].hours unless closed_entries_by_user[user.id].nil? || closed_entries_by_user[user.id][day].nil?
+                #availabilities[day][user.id] = [0, availabilities[day][user.id]].max
                 availabilities[day][user.id] = 0 if day.holiday?($holiday_locale, :observed)
             end
         end
@@ -398,6 +417,11 @@ class SchedulesController < ApplicationController
         # Parse the focused user and/or project
         @project = Project.find(params[:project_id]) if params[:project_id]
         @user = User.find(params[:user_id]) if params[:user_id]
+        
+        params[:period] = params[:post]['period'] if params[:post]
+        @period = params[:period] if params[:period] && !params[:period].empty?
+        @period ||= 'month'
+        
         @focus = "users" if @project.nil? && @user.nil?
         @projects = visible_projects.sort
         @projects = @projects & @user.projects unless @user.nil?
@@ -405,13 +429,17 @@ class SchedulesController < ApplicationController
         @users = visible_users(@projects.collect(&:members).flatten.uniq)
         @users = @users & [@user] unless @user.nil?
         @users = [@user] if !@user.nil? && @users.empty? && User.current.admin?
+        @periods = [[l(:label_week), 'week'], [l(:label_month), 'month']]
         deny_access if (@projects.empty? || @users.nil? || @users.empty?) && !User.current.admin?
 
         # Parse the given date or default to today
         @date = Date.parse(params[:date]) if params[:date]
         @date ||= Date.civil(params[:year].to_i, params[:month].to_i, params[:day].to_i) if params[:year] && params[:month] && params[:day]
         @date ||= Date.today
-        @calendar = Redmine::Helpers::Calendar.new(@date, current_language, :week)
+        @calendar = get_calendar(@date)
+
+        @weekends = params[:weekends] || false
+        @weeks = @calendar.days.each_slice(7).to_a.collect { |week| week.slice(0, week.length - (@weekend ? 0 : 2)) }
 
     rescue ActiveRecord::RecordNotFound
         render_404

@@ -4,7 +4,7 @@
 <% if !@projects.nil? && !@projects.empty? && @project.nil? %>
     <h3><%= l(:label_schedules_projects) %></h3>
     <% @projects.each do |project| %>
-        <%= link_to project, :controller => 'schedules', :action => 'index', :project_id => project %>
+        <%= link_to project, '/projects/' + project.to_s.downcase + '/schedules' %>
         <br/>
     <% end %>
 <% end %>
