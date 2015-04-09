@@ -1,3 +1,4 @@
+require 'json'
 class SchedulesController < ApplicationController
     unloadable
 
@@ -382,15 +383,16 @@ class SchedulesController < ApplicationController
 
         # Generate and return the availabilities based on the above variables
         availabilities = Hash.new
-        @calendar.days.each do |day|
-            availabilities[day] = Hash.new
+        @weeks.first.each do |day|
+            idx = day.wday
+            availabilities[day.wday] = Hash.new
             @users.each do |user|
-                availabilities[day][user.id] = 0
-                #availabilities[day][user.id] = defaults_by_user[user.id].weekday_hours[day.wday] unless defaults_by_user[user.id].nil?
-                #availabilities[day][user.id] -= entries_by_user[user.id][day].collect {|entry| entry.hours }.sum unless entries_by_user[user.id].nil? || entries_by_user[user.id][day].nil?
-                #availabilities[day][user.id] -= closed_entries_by_user[user.id][day].hours unless closed_entries_by_user[user.id].nil? || closed_entries_by_user[user.id][day].nil?
-                #availabilities[day][user.id] = [0, availabilities[day][user.id]].max
-                availabilities[day][user.id] = 0 if day.holiday?($holiday_locale, :observed)
+                availabilities[day.wday][user.id] = 0
+                availabilities[day.wday][user.id] = defaults_by_user[user.id].weekday_hours[day.wday] unless defaults_by_user[user.id].nil? || defaults_by_user[user.id].weekday_hours[day.wday].nil?
+                availabilities[day.wday][user.id] -= entries_by_user[user.id][day].collect {|entry| entry.hours }.sum unless entries_by_user[user.id].nil? || entries_by_user[user.id][day].nil?
+                availabilities[day.wday][user.id] -= closed_entries_by_user[user.id][day].hours unless closed_entries_by_user[user.id].nil? || closed_entries_by_user[user.id][day].nil?
+                availabilities[day.wday][user.id] = [0, availabilities[day.wday][user.id]].max
+                availabilities[day.wday][user.id] = 0 if day.holiday?($holiday_locale, :observed)
             end
         end
         availabilities

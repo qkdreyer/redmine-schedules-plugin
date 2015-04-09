@@ -8,8 +8,9 @@ table.schedule_entry_grid td { text-align: center; vertical-align: middle; }
 table.schedule_entry_grid input { text-align: center; }
 table.schedule_entry_cal tbody tr { height: 2em; }
 table.schedule_entry_cal tbody th { padding: 2px; border: 1px solid #D7D7D7; }
-table.schedule_entry_cal ul { list-style-type: none; padding: 0; margin: 0.5em 0.5em 0; }
-table.schedule_entry_cal li div { padding: 0.5em; margin-bottom: 0; line-height: 1em; border: 1px solid #CCC; background: #EEE; }
+table.schedule_entry_cal ul { list-style-type: none; padding: 0; margin: 0.5em; overflow: hidden; }
+table.schedule_entry_cal li > div { padding: 0.5em; margin-bottom: 0; border: 1px solid #CCC; background: #EEE; box-sizing: border-box; line-height: 0; position: relative; }
+table.schedule_entry_cal li > div > * { position: absolute; top: 50%; }
 table.schedule_entry_cal li.availability_entry div { opacity: 0.6; }
 span.schedule_available { white-space: nowrap; }
 td.hours table.progress { float: right; margin: 1px 0 1px 6px; }
@@ -18,8 +19,6 @@ td.underscheduled table.progress td.closed { background: #e0dbba none repeat scr
 table.cal td.holiday { background: #EED; }
 
 table.schedule thead th, table.schedule td { width: 14%; }
+table.schedule.notlast tbody tr:last-of-type > *, table.schedule.notlast { margin-bottom: 0; border-bottom: 0; }
 table.schedule.overall li { float:left; }
-table.schedule.overall li * { display: block; overflow: hidden; }
-table.schedule.overall li, table.schedule.overall li > * { min-height: 0 !important; }
-table.schedule.overall li div { width: 100%; box-sizing: border-box; }
-table.schedule.overall ul { margin: 0; padding: 0; }
+table.schedule.overall li > div { width: 100%; max-height: 23px; }

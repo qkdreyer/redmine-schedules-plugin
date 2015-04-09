@@ -4,12 +4,12 @@
 %>
 
 <% weeks.each_with_index do |week, index| %>
-    <table class="cal schedule schedule_entry_grid" <%= 'style=margin-bottom:0' unless index == weeks.length - 1 %>>
+    <table class="cal schedule schedule_entry_grid <%= 'notlast' unless index == weeks.length - 1 %>">
         <thead>
             <tr>
-                <td><%= l(:label_week) + ' ' + week[0].cweek.to_s unless week.empty? %></td>
+                <th><%= l(:label_week) + ' ' + week[0].cweek.to_s unless week.empty? %></th>
                 <% week.each do |day| %>
-                    <th><%= day_name(day.wday) %></th>
+                    <th><%= "#{day_name(day.wday)} #{day.day}/#{day.month}" %></th>
                 <% end %>
             </tr>
         </thead>

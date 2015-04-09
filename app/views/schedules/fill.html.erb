@@ -10,7 +10,7 @@
     <div class="box">
 
         <fieldset id="date-range"><legend><%= l(:label_date_range) %></legend>
-            <%= select "post", "period", @periods, {:selected => @period} %>
+            <%= hidden_field_tag  'period', @period %>
             <%= select_day(@date.day, :prefix => "day", :discard_type => true) %>
             <%= select_month(@date.month, :prefix => "month", :discard_type => true) %>
             <%= select_year(@date.year, :prefix => "year", :discard_type => true) %>
@@ -23,7 +23,7 @@
         <% @weeks = @weeks.slice(0,1) %>
         <% @weeks.each_with_index do |week, index| %>
 
-            <table class="cal schedule schedule_entry_grid schedule_fill_grid" <%= 'style=margin-bottom:0' unless index == @weeks.length - 1 %>>
+            <table class="cal schedule schedule_entry_grid schedule_fill_grid <%= 'notlast' unless index == @weeks.length - 1 %>">
                 <thead>
                     <tr>
                         <td rowspan="2">
