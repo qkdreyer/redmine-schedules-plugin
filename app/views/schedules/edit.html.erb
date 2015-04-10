@@ -14,7 +14,7 @@
     <fieldset id="date-range"><legend><%= l(:label_date_range) %></legend>
         <%= hidden_field_tag 'project_id', @project.id unless @project.nil? %>
         <%= hidden_field_tag 'user_id', @user.id unless @user.nil? %>
-        <%= select "post", "period", @periods, {:selected => @period} %>
+        <%= select_tag(:period, options_for_select(@periods, @period.to_s)) %>
         <%= select_day(@date.day, :prefix => "day", :discard_type => true) %>
         <%= select_month(@date.month, :prefix => "month", :discard_type => true) %>
         <%= select_year(@date.year, :prefix => "year", :discard_type => true) %>

@@ -26,9 +26,7 @@
             <table class="cal schedule schedule_entry_grid schedule_fill_grid <%= 'notlast' unless index == @weeks.length - 1 %>">
                 <thead>
                     <tr>
-                        <td rowspan="2">
-                            <strong><%= l(:label_week) + ' ' + week[0].cweek.to_s unless week.empty? %></strong>
-                        </td>
+                        <td rowspan="2"></td>
                         <th colspan="<%= week.count %>"><%= l(:label_schedules_fill_week_header) %></th>
                         <th class="fill" rowspan="2"><%= l(:label_schedules_fill_total_header) %></th>
                     </tr>

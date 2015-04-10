@@ -421,10 +421,6 @@ class SchedulesController < ApplicationController
         @project = Project.find(params[:project_id]) if params[:project_id]
         @user = User.find(params[:user_id]) if params[:user_id]
         
-        params[:period] = params[:post]['period'] if params[:post]
-        @period = params[:period] if params[:period] && !params[:period].empty?
-        @period ||= 'month'
-        
         @focus = "users" if @project.nil? && @user.nil?
         @projects = visible_projects.sort
         @projects = @projects & @user.projects unless @user.nil?
@@ -438,11 +434,23 @@ class SchedulesController < ApplicationController
         # Parse the given date or default to today
         @date = Date.parse(params[:date]) if params[:date]
         @date ||= Date.civil(params[:year].to_i, params[:month].to_i, params[:day].to_i) if params[:year] && params[:month] && params[:day]
+        @date ||= Date.parse(cookies[:date]) if cookies[:date]
         @date ||= Date.today
-        @calendar = get_calendar(@date)
 
-        @weekends = params[:weekends] || false
+        # Parse the given period or default to month
+        #params[:period] = params[:post]['period'] if params[:post]
+        @period = params[:period] if params[:period] && !params[:period].empty?
+        @period ||= cookies[:period] if cookies[:period]
+        @period ||= 'month'
+
+        @weekends = params[:weekends] || false # tofuture
+        @calendar = get_calendar(@date)
         @weeks = @calendar.days.each_slice(7).to_a.collect { |week| week.slice(0, week.length - (@weekend ? 0 : 2)) }
+
+        # Handling filters with cookies
+
+        cookies[:date] = @date;
+        cookies[:period] = @period;
 
     rescue ActiveRecord::RecordNotFound
         render_404

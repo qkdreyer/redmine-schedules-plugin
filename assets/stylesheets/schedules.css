@@ -20,5 +20,7 @@ table.cal td.holiday { background: #EED; }
 
 table.schedule thead th, table.schedule td { width: 14%; }
 table.schedule.notlast tbody tr:last-of-type > *, table.schedule.notlast { margin-bottom: 0; border-bottom: 0; }
-table.schedule.overall li { float:left; }
-table.schedule.overall li > div { width: 100%; height: 23px !important; }
+table.schedule li.holiday { width: 100%; }
+table.schedule li.holiday > div { height: 23px; }
+table.schedule li, table.schedule.overall li { float:left; }
+table.schedule li > div, table.schedule.overall li > div { width: 100%; height: 23px !important; }

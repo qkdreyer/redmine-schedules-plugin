@@ -18,16 +18,20 @@
 
 <%= form_tag({}, :id => 'date_form') do %>
     <fieldset id="date-range"><legend><%= l(:label_date_range) %></legend>
-        <%= select "post", "period", @periods, {:selected => @period} %>
+        <%= select_tag(:period, options_for_select(@periods, @period.to_s)) %>
         <%= select_day(@date.day, :prefix => "day", :discard_type => true) %>
         <%= select_month(@date.month, :prefix => "month", :discard_type => true) %>
         <%= select_year(@date.year, :prefix => "year", :discard_type => true) %>
     </fieldset>
-    <% nav_symbol = ('label_' + @period).to_sym %>
     <% nav_date = (@period == 'week' ? 7 : 30) %>
     <p style="float:right; margin:0px;">
-        <%= link_to ("&#171; #{l(:label_previous)} #{l(nav_symbol).downcase}").html_safe, { :year => (@date-nav_date).year, :month => (@date-nav_date).month, :day => (@date-(@period == 'week' ? nav_date : 0)).day } %> |
-        <%= link_to ("#{l(:label_next)} #{l(nav_symbol).downcase} &#187;").html_safe, { :year => (@date+nav_date).year, :month => (@date+nav_date).month, :day => (@date+(@period == 'week' ? nav_date : 0)).day } %>
+        <% if @period == 'week' %>
+            <%= link_to ("&#171; #{l(:label_navigation_prev_week)}").html_safe, { :year => (@date-nav_date).year, :month => (@date-nav_date).month, :day => (@date-nav_date).day } %> |
+            <%= link_to ("#{l(:label_navigation_next_week)} &#187;").html_safe, { :year => (@date+nav_date).year, :month => (@date+nav_date).month, :day => (@date+nav_date).day } %>
+        <% elsif @period == 'month' %>
+            <%= link_to ("&#171; #{l(:label_navigation_prev_month)}").html_safe, { :year => (@date-nav_date).year, :month => (@date-nav_date).month, :day => @date.day } %> |
+            <%= link_to ("#{l(:label_navigation_next_month)} &#187;").html_safe, { :year => (@date+nav_date).year, :month => (@date+nav_date).month, :day => @date.day } %>
+        <% end %>
     </p>
     <p class="buttons">
         <%= link_to_function l(:button_apply), '$("#date_form").submit()', :class => 'icon icon-checked' %>
