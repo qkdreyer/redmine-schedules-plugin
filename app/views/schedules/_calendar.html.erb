@@ -8,6 +8,13 @@
     </div>
 <% end %>
 
+<% sum = Hash.new %>
+<% available_sum = Hash.new %>
+<% weeks.first.each do |day| idx = day.wday %>
+    <% sum[idx] = 0 %>
+    <% available_sum[idx] = 0 %>
+<% end %>
+
 <% weeks.each_with_index do |week, index| %>
     <table class="cal schedule schedule_entry_cal <%= 'overall' unless @focus != "users" %> <%= 'notlast' unless index == weeks.length - 1 %>">
         <thead>
@@ -40,9 +47,9 @@
                             <%= link_to @user, :controller => 'schedules', :action => 'index', :date => @date, :user_id => @user unless @user.nil? %>
                         </th>
                         <% week.each do |day| %>
-                            <td class="even<%= ' today' if Date.today == day %> <%= ' holiday' if day.holiday?($holiday_locale, :observed) %>">
+                            <td class="even <%= 'today' if Date.today == day %> <%= 'holiday' if day.holiday?($holiday_locale, :observed) %>">
                                 <ul>
-                                    <% hours = @focus == "users" ? @availabilities[day.wday][focus_object.id] : 0 %>
+                                    <% hours = @focus == "users" ? @availabilities[day][focus_object.id] : 0 %>
                                     <% total = hours + (!schedule_entries_by_day.nil? && !schedule_entries_by_day[day].nil? ? schedule_entries_by_day[day].reduce(0) { |memo, entry| memo + entry.hours } : 0) %>
                                     <% if !schedule_entries_by_day.nil? && !schedule_entries_by_day[day].nil? %>
                                         <% schedule_entries_by_day[day].sort.each do |entry| %>
@@ -63,14 +70,14 @@
                 <% schedule_entries_by_day = @entries.group_by {|entry| entry.date} %>
                 <tr>
                     <% week.each do |day| %>
-                            <td class="even<%= ' today' if Date.today == day %> <%= ' holiday' if day.holiday?($holiday_locale, :observed) %>">
-                            <ul>
+                        <td class="even <%= 'today' if Date.today == day %> <%= 'holiday' if day.holiday?($holiday_locale, :observed) %>">
+                            <ul data-availabilities-nil="<%= @availabilities.nil? %>" data-availabilities-empty="<%= @availabilities.empty? %>">
                                 <% if !schedule_entries_by_day[day].nil? %>
                                     <% schedule_entries_by_day[day].sort.each do |entry| %>
                                         <%= render :partial => 'schedules/schedule_entry', :locals => {:entry => entry, :focus => @focus} %>
                                     <% end %>
                                 <% end %>
-                                <% @availabilities[day.wday].each do |user_id, hours| %>
+                                <% @availabilities[day].each do |user_id, hours| %>
                                     <% user = User.find(user_id) %>
                                     <%= render :partial => 'schedules/availability', :locals => {:user => user, :hours => hours, :day => day, :focus => @focus } %>
                                 <% end unless @availabilities.nil? || @availabilities.empty? %>
@@ -80,21 +87,23 @@
                 </tr>
             <% end %>
         </tbody>
+        <% schedule_entries_by_day ||= @entries.group_by {|entry| entry.date} %>
+        <% entries_by_day = schedule_entries_by_day %>
+        <% week.each do |day| idx = day.wday %>
+            <% sum[idx] += entries_by_day[day].nil? ? 0 : entries_by_day[day].collect(&:hours).sum %>
+            <% available_sum[idx] += @availabilities[idx].nil? ? 0 : @availabilities[idx].collect { |user, hours| hours }.sum %>
+        <% end %>
         <% if index == weeks.size - 1 %>
             <tfoot>
                 <tr>
-                    <% schedule_entries_by_day ||= @entries.group_by {|entry| entry.date} %>
                     <% if !@focus.nil? %>
                         <th><%= focus_objects.count %> <%= l('label_' + @focus[0..-2] + '_plural') %></th>
                     <% end %>
-                    <% entries_by_day = schedule_entries_by_day %>
-                    <% week.each do |day| %>
+                    <% week.each do |day| idx = day.wday %>
                         <th>
-                            <% sum = entries_by_day[day].nil? ? 0 : entries_by_day[day].collect(&:hours).sum %>
-                            <%= sum if sum > 0 %>
-                            <% available_sum = @availabilities[day.wday].nil? ? 0 : @availabilities[day.wday].collect { |user, hours| hours }.sum %>
-                            <% if available_sum %>
-                                <span class='schedule_available'>(<%= available_sum.to_s %> <%= l(:label_schedules_available).downcase %>)</span>
+                            <%= sum[idx] if sum[idx] > 0 %>
+                            <% if available_sum[idx] %>
+                                <span class='schedule_available'>(<%= available_sum[idx].to_s %> <%= l(:label_schedules_available).downcase %>)</span>
                             <% end %>
                         </th>
                     <% end %>
