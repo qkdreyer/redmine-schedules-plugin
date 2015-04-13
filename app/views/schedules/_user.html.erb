@@ -19,7 +19,7 @@
                 <tr>
                     <th><%= project %></th>
                     <% week.each do |day| %>
-                            <td class="even<%= ' today' if Date.today == day %> <%= ' holiday' if day.holiday?($holiday_locale, :observed) %>">
+                            <td class="even <%= 'today' if Date.today == day %> <%= 'holiday' if day.holiday?($holiday_locale, :observed) %>">
                             <%
                                 if date_entries[day.ajd].nil?
                                     entry = ScheduleEntry.new
