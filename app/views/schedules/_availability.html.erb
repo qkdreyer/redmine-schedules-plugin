@@ -1,6 +1,6 @@
 <% if hours > 0 %>
     <li class="availability_entry" style="<%= 'width: ' + (100*hours/total).to_s + '%' %>">
-        <div title="<%= user.name + " : " + ScheduleCompatibility::I18n.lwr(:label_f_hour, :value => hours) %>" style="height: <%= 23*hours %>px;">
+        <div title="<%= l(:label_schedules_available) + " : " + ScheduleCompatibility::I18n.lwr(:label_f_hour, :value => hours) %>" style="height: <%= 23*hours %>px;">
             <% if @project.nil? %><em><%= l(:label_schedules_available) %></em><% end %>
             <% if @project.nil? && @user.nil? %><br/><% end %>
             <%= link_to user.name.gsub(/[^A-Z]/, ''), :controller => 'schedules', :action => 'index', :date => day, :user_id => user.id if @user.nil? %>

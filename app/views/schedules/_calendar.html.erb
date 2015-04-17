@@ -26,7 +26,7 @@
             </tr>
         </thead>
         <tbody>
-            <% if !@focus.nil?
+            <% if !@focus.nil? # global planning
 
                 if @focus == "users"
                     schedule_entries_by_focus = @entries.group_by {|entry| entry.user_id}
@@ -47,7 +47,7 @@
                             <%= link_to @user, :controller => 'schedules', :action => 'index', :date => @date, :user_id => @user unless @user.nil? %>
                         </th>
                         <% week.each do |day| %>
-                            <td class="even <%= 'today' if Date.today == day %> <%= 'holiday' if day.holiday?($holiday_locale, :observed) %>">
+                            <td class="even <%= 'adj' if @date.month != day.month %> <%= 'today' if Date.today == day %> <%= 'holiday' if day.holiday?($holiday_locale, :observed) %>">
                                 <ul>
                                     <% hours = @focus == "users" ? @availabilities[day][focus_object.id] : 0 %>
                                     <% total = hours + (!schedule_entries_by_day.nil? && !schedule_entries_by_day[day].nil? ? schedule_entries_by_day[day].reduce(0) { |memo, entry| memo + entry.hours } : 0) %>
@@ -70,28 +70,45 @@
                 <% end %>
                 <% @project = nil %>
                 <% @user = nil %>
-            <% else %>
+            <% else %> <!-- Project / User Planning -->
                 <% schedule_entries_by_day = @entries.group_by {|entry| entry.date} %>
                 <tr>
                     <% week.each do |day| %>
-                        <td class="even <%= 'today' if Date.today == day %> <%= 'holiday' if day.holiday?($holiday_locale, :observed) %>">
+                        <td class="even <%= 'adj' if @date.month != day.month %> <%= 'today' if Date.today == day %> <%= 'holiday' if day.holiday?($holiday_locale, :observed) %>">
                             <ul data-availabilities-nil="<%= @availabilities.nil? %>" data-availabilities-empty="<%= @availabilities.empty? %>">
+
+                            <% if !@project.nil? %>
+
+                                <% day_user_entry = schedule_entries_by_day[day] && schedule_entries_by_day[day].group_by {|entry| entry.user_id} || nil %>
+                                <% @availabilities[day].each do |user_id, hours| %>                                    
+                                    <% entry = !day_user_entry.nil? && !day_user_entry[user_id].nil? && day_user_entry[user_id][0] || nil %>
+                                    <% entry_hours = entry ? entry.hours : 0 %>
+                                    <% total = hours + entry_hours %>
+
+                                    <% if !entry.nil? %>
+                                        <%= render :partial => 'schedules/schedule_entry', :locals => {:entry => entry, :total => total, :focus => @focus} %>
+                                    <% end %>
+                                    <%= render :partial => 'schedules/availability', :locals => {:user => User.find(user_id), :hours => hours, :total => total, :day => day, :focus => @focus } %>
+                                <% end %>
+
+                            <% else %>
                                 <% hours = !@user.nil? ? @availabilities[day][@user.id] : 0 %>
                                 <% total = hours + (!schedule_entries_by_day.nil? && !schedule_entries_by_day[day].nil? ? schedule_entries_by_day[day].reduce(0) { |memo, entry| memo + entry.hours } : 0) %>
                                 <% if !schedule_entries_by_day[day].nil? %>
                                     <% schedule_entries_by_day[day].sort.each do |entry| %>
+                                        <% total = hours + @availabilities[day][entry.user.id] if @user.nil? %>
                                         <%= render :partial => 'schedules/schedule_entry', :locals => {:entry => entry, :total => total, :focus => @focus} %>
                                     <% end %>
                                 <% end %>
                                 <% @availabilities[day].each do |user_id, hours| %>
-                                    <% user = User.find(user_id) %>
-                                    <% total = @availabilities[day][user.id] if total == 0 %>
-                                    <%= render :partial => 'schedules/availability', :locals => {:user => user, :hours => hours, :total => total, :day => day, :focus => @focus } %>
+                                    <% total = @availabilities[day][user_id] if total == 0 %>
+                                    <%= render :partial => 'schedules/availability', :locals => {:user => User.find(user_id), :hours => hours, :total => total, :day => day, :focus => @focus } %>
                                 <% end unless @availabilities.nil? || @availabilities.empty? %>
 
                                 <% day.holidays($holiday_locale).each do |holiday| %>
                                     <li class="holiday"><div><a><%= holiday[:name] %></a></div></li>
                                 <% end %>
+                            <% end %>
                             </ul>
                         </td>
                     <% end %>

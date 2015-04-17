@@ -1,7 +1,6 @@
 # https://github.com/redmine/redmine/tree/master/lib/redmine/helpers/calendar.rb
 
 module CalendarHelper
-  #include Redmine::Helpers
 
   class Calendar
     attr_reader :startdt, :enddt
