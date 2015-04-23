@@ -18,6 +18,7 @@
 
 <%= form_tag({}, :id => 'date_form') do %>
     <fieldset id="date-range"><legend><%= l(:label_date_range) %></legend>
+        <%= submit_tag l(:button_today) %>
         <%= select_tag(:period, options_for_select(@periods, @period.to_s)) %>
         <%= select_day(@date.day, :prefix => "day", :discard_type => true) %>
         <%= select_month(@date.month, :prefix => "month", :discard_type => true) %>

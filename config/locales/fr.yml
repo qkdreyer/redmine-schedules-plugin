@@ -38,5 +38,6 @@ fr:
   button_schedules_default_edit: "Modifier les disponibilités par défaut"
   button_schedules_fill: "Remplir le planning"
   button_save_next: "Enregistrer et continuer avec la semaine prochaine"
+  button_today: "Aujourd'hui"
   label_period: "Période"
   field_filling_for: "Remplir pour"

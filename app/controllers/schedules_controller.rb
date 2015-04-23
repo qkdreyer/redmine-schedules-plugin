@@ -437,6 +437,10 @@ class SchedulesController < ApplicationController
         @date ||= Date.parse(cookies[:date]) if cookies[:date]
         @date ||= Date.today
 
+        if params[:commit] == l(:button_today)
+            @date = Date.today
+        end
+
         # Parse the given period or default to month
         #params[:period] = params[:post]['period'] if params[:post]
         @period = params[:period] if params[:period] && !params[:period].empty?

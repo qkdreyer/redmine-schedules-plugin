@@ -38,5 +38,6 @@ en:
   button_schedules_default_edit: "Edit default availability"
   button_schedules_fill: "Fill schedule"
   button_save_next: "Save and edit next week"
+  button_today: "Today"
   label_period: "Period"
   field_filling_for: "Filling for"
