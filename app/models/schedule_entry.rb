@@ -10,7 +10,7 @@ class ScheduleEntry < ActiveRecord::Base
         blue  = ((Math.sin(color_id*2.6+Math::PI*4/3)+5)*32).to_i + 56
 
         result = "background: rgb(#{red.to_s},#{green.to_s},#{blue.to_s}); "
-        result << "border: 1px solid rgb(#{(red/2).to_s},#{(green/2).to_s},#{(blue/2).to_s}); "
+        #result << "border: 1px solid rgb(#{(red/2).to_s},#{(green/2).to_s},#{(blue/2).to_s}); "
         result 
     end
     

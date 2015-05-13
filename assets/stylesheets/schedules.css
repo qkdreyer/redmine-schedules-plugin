@@ -6,25 +6,49 @@ table.schedule_fill_grid thead th.fill { border: 1px solid #D7D7D7; white-space:
 table.schedule_fill_grid tbody td.fill { background: #FFD; }
 table.schedule_entry_grid td { text-align: center; vertical-align: middle; }
 table.schedule_entry_grid input { text-align: center; }
-table.schedule_entry_cal tbody tr { height: 2em; }
+table.schedule_entry_cal tbody tr { height: 2em; border: 0;}
 table.schedule_entry_cal tbody th { padding: 2px; border: 1px solid #D7D7D7; }
-table.schedule_entry_cal ul { list-style-type: none; padding: 0; margin: 0.5em; overflow: hidden; }
-table.schedule_entry_cal li > div { padding: 0.5em; padding-left: 5px; padding-right: 0;margin-bottom: 0; border: 1px solid #CCC; background: #EEE; box-sizing: border-box; line-height: 1em; }
-table.schedule_entry_cal li > div > * { display: block; overflow: hidden; line-height: 1.2em; position: relative; top: -15%; }
-table.schedule_entry_cal li.availability_entry div { opacity: 0.6; }
+table.schedule_entry_cal ul { list-style-type: none; padding: 0; margin: 0; overflow: hidden;}
+table.schedule_entry_cal li > div { padding: 0.5em; padding-left: 0; padding-right: 0;margin-bottom: 0; border: 0; background: #FFF; box-sizing: border-box; line-height: 1em; }
+table.schedule_entry_cal li > div > * { /* display: block; */ /* overflow: hidden; */ /* position: relative; */ /* top: -8%; */}
+table.schedule_entry_cal li.schedule_entry > div > * { color: white; }
+table.schedule_entry_cal li.availability_entry div, table.schedule_entry_cal li.holiday div { opacity: 0.6; border: 0;}
 span.schedule_available { white-space: nowrap; }
 td.hours table.progress { float: right; margin: 1px 0 1px 6px; }
 td.hours p.pourcent { font-size: inherit; }
 td.underscheduled table.progress td.closed { background: #e0dbba none repeat scroll 0%; }
-table.cal td.holiday { background: #EED; }
+table.cal td.holiday { background: #E4E4E4; }
 
-table.schedule thead th, table.schedule td { width: 14%; }
-table.schedule.notlast tbody tr:last-of-type > *, table.schedule.notlast { margin-bottom: 0; border-bottom: 0; }
+table.schedule thead th, table.schedule td { width: 14%; padding: 0; border: 0;}
+table.schedule.notlast tbody tr:last-of-type > *, table.schedule.notlast { margin-bottom: 0;}
 table.schedule li.holiday { width: 100%; }
 table.schedule li.holiday > div { height: 23px; }
 table.schedule li, table.schedule.overall li { float:left; }
-table.schedule li > div, table.schedule.overall li > div { width: 100%; height: 23px !important; }
-table.schedule td.adj { background: #E4E4E4; }
+table.schedule li > div, table.schedule.overall li > div { width: 100%; height: 60px !important; line-height: 50px; text-align: center;}
+table.schedule td.adj { }
 
 /*table.schedule.overall li > div  { position: relative; line-height: 0; }
 table.schedule.overall li > div > * { position: absolute; top: 50%; }*/
+
+/* blue: 369ED3 */
+/* grey: EEEEEE */
+table.schedule { margin: 0 1%; width: 98%; border: 0;}
+table.schedule thead th { padding: 10px 0; font-weight: normal; text-transform: capitalize; background-color: #E6E6E6;}
+table.schedule th.today { color: #369ED3; border: 1px solid #369ED3; border-bottom: 0; font-weight: bold; }
+table.schedule td.today { background: none; border: 1px solid #369ED3; border-top: 0;}
+table.schedule td { border: 1px solid #EEEEEE;}
+.controller-schedules #header { display: none; }
+.controller-schedules #main { margin-left: 15px; }
+.controller-schedules #main #content { padding: 0; }
+.controller-schedules #main #content h2 { background-color: white; background-image: none; margin: 0px; padding: 15px 0 10px 15px;}
+.controller-schedules #main #content .contextual { border: none; margin-top: 8px;}
+.controller-schedules #main #content p.buttons { position: relative; top: -55px; right: -70px; float: right; }
+.controller-schedules #main #content p.navigate { float: none !important;}
+.controller-schedules #main #content p.navigate a { padding: 10px ; /* content: ""; */}
+.controller-schedules #main #content p.navigate a:first-of-type { float: left !important; }
+.controller-schedules #main #content p.navigate a:last-of-type { float: right !important; }
+.controller-schedules #date-range { background-color: #EEEEEE; padding: 15px;}
+.controller-schedules #date-range legend { display: none; }
+.controller-schedules #date-range input { background-color: #369ED3; background-image: none; width: 15%; text-align: left; padding: 10px !important; margin-right: 10px;}
+.controller-schedules #date-range select { background-color: white; color: #369ED3; padding: 10px !important; text-align: left; border-radius: 5px; width: 15%; margin-right: 10px;}
+.controller-schedules p.subtitle { display: none; }

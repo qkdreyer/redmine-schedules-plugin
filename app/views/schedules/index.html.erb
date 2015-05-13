@@ -25,12 +25,12 @@
         <%= select_year(@date.year, :prefix => "year", :discard_type => true) %>
     </fieldset>
     <% nav_date = (@period == 'week' ? 7 : 30) %>
-    <p style="float:right; margin:0px;">
+    <p class="navigate" style="float:right; margin:0px;">
         <% if @period == 'week' %>
-            <%= link_to ("&#171; #{l(:label_navigation_prev_week)}").html_safe, { :year => (@date-nav_date).year, :month => (@date-nav_date).month, :day => (@date-nav_date).day } %> |
+            <%= link_to ("&#171; #{l(:label_navigation_prev_week)}").html_safe, { :year => (@date-nav_date).year, :month => (@date-nav_date).month, :day => (@date-nav_date).day } %>
             <%= link_to ("#{l(:label_navigation_next_week)} &#187;").html_safe, { :year => (@date+nav_date).year, :month => (@date+nav_date).month, :day => (@date+nav_date).day } %>
         <% elsif @period == 'month' %>
-            <%= link_to ("&#171; #{l(:label_navigation_prev_month)}").html_safe, { :year => (@date-nav_date).year, :month => (@date-nav_date).month, :day => @date.day } %> |
+            <%= link_to ("&#171; #{l(:label_navigation_prev_month)}").html_safe, { :year => (@date-nav_date).year, :month => (@date-nav_date).month, :day => @date.day } %>
             <%= link_to ("#{l(:label_navigation_next_month)} &#187;").html_safe, { :year => (@date+nav_date).year, :month => (@date+nav_date).month, :day => @date.day } %>
         <% end %>
     </p>

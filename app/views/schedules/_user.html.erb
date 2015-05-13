@@ -9,7 +9,8 @@
             <tr>
                 <th><%= l(:label_week) + ' ' + week[0].cweek.to_s unless week.empty? %></th>
                 <% week.each do |day| %>
-                    <th><%= "#{day_name(day.wday)} #{day.day}/#{day.month}" %></th>
+                    <% classes = (@date.month != day.month ? 'adj ' : '') + (Date.today == day ? 'today ' : '') + (day.holiday?($holiday_locale, :observed) ? 'holiday ' : '') %>
+                    <th class="<%= classes %>"><%= "#{day_name(day.wday)} #{day.day}/#{day.month}" %></th>
                 <% end %>
             </tr>
         </thead>
@@ -19,7 +20,8 @@
                 <tr>
                     <th><%= project %></th>
                     <% week.each do |day| %>
-                            <td class="even <%= 'adj' if @date.month != day.month %> <%= 'today' if Date.today == day %> <%= 'holiday' if day.holiday?($holiday_locale, :observed) %>">
+                        <% classes = (@date.month != day.month ? 'adj ' : '') + (Date.today == day ? 'today ' : '') + (day.holiday?($holiday_locale, :observed) ? 'holiday ' : '') %>
+                            <td class="even <%= classes %>">
                             <%
                                 if date_entries[day.ajd].nil?
                                     entry = ScheduleEntry.new
@@ -44,7 +46,8 @@
             <tr>
                 <th><em><%= l(:label_schedules_unavailable) %></em></th>
                 <% week.each do |day| %>
-                    <td class="odd">
+                    <% classes = (@date.month != day.month ? 'adj ' : '') + (Date.today == day ? 'today ' : '') + (day.holiday?($holiday_locale, :observed) ? 'holiday ' : '') %>
+                    <td class="odd <%= classes %>">
                         <%
                             if closed_entries[day.ajd].nil?
                                 entry = ScheduleClosedEntry.new
@@ -68,7 +71,8 @@
             <tr>
                 <th><%= l(:label_total) %></th>
                 <% week.each do |day| %>
-                    <td class="even<%= ' today' if Date.today == day %> <%= ' holiday' if day.holiday?($holiday_locale, :observed) %>">
+                    <% classes = (@date.month != day.month ? 'adj ' : '') + (Date.today == day ? 'today ' : '') + (day.holiday?($holiday_locale, :observed) ? 'holiday ' : '') %>
+                    <td class="even <%= classes %>">
                         <% sum = @entries.collect {|e| e.hours if e.date == day }.compact.sum %>
                         <% sum += closed_entries[day.ajd].hours unless closed_entries[day.ajd].nil? %>
                         <%= sum if sum > 0 %>

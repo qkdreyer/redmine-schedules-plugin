@@ -21,7 +21,8 @@
             <tr>
                 <% if !@focus.nil? %><th><%= l(:label_week) + ' ' + week[0].cweek.to_s unless week.empty? %></th><% end %>
                 <% week.each do |day| %>
-                    <th><%= "#{day_name(day.wday)} #{day.day}/#{day.month}" %></th>
+                    <% classes = (@date.month != day.month ? 'adj ' : '') + (Date.today == day ? 'today ' : '') + (day.holiday?($holiday_locale, :observed) ? 'holiday ' : '') %>
+                    <th class="<%= classes %>"><%= "#{day_name(day.wday)} #{day.day}/#{day.month}" %></th>
                 <% end %>
             </tr>
         </thead>
@@ -47,7 +48,8 @@
                             <%= link_to @user, :controller => 'schedules', :action => 'index', :date => @date, :user_id => @user unless @user.nil? %>
                         </th>
                         <% week.each do |day| %>
-                            <td class="even <%= 'adj' if @date.month != day.month %> <%= 'today' if Date.today == day %> <%= 'holiday' if day.holiday?($holiday_locale, :observed) %>">
+                            <% classes = (@date.month != day.month ? 'adj ' : '') + (Date.today == day ? 'today ' : '') + (day.holiday?($holiday_locale, :observed) ? 'holiday ' : '') %>
+                            <td class="even <%= classes %>">
                                 <ul>
                                     <% hours = @focus == "users" ? @availabilities[day][focus_object.id] : 0 %>
                                     <% total = hours + (!schedule_entries_by_day.nil? && !schedule_entries_by_day[day].nil? ? schedule_entries_by_day[day].reduce(0) { |memo, entry| memo + entry.hours } : 0) %>
@@ -74,7 +76,8 @@
                 <% schedule_entries_by_day = @entries.group_by {|entry| entry.date} %>
                 <tr>
                     <% week.each do |day| %>
-                        <td class="even <%= 'adj' if @date.month != day.month %> <%= 'today' if Date.today == day %> <%= 'holiday' if day.holiday?($holiday_locale, :observed) %>">
+                        <% classes = (@date.month != day.month ? 'adj ' : '') + (Date.today == day ? 'today ' : '') + (day.holiday?($holiday_locale, :observed) ? 'holiday ' : '') %>
+                        <td class="even <%= classes %>">
                             <ul data-availabilities-nil="<%= @availabilities.nil? %>" data-availabilities-empty="<%= @availabilities.empty? %>">
 
                             <% if !@project.nil? %>
