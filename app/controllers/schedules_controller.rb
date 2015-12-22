@@ -1,4 +1,11 @@
 require 'json'
+require 'holidays/core_extensions/date'
+
+# Load Helidays Date extension
+class Date
+  include Holidays::CoreExtensions::Date
+end
+
 class SchedulesController < ApplicationController
     unloadable
 
