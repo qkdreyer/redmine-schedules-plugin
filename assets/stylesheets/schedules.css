@@ -34,15 +34,16 @@ table.schedule.overall li > div > * { position: absolute; top: 50%; }*/
 /* grey: EEEEEE */
 table.schedule { margin: 0 1%; width: 98%; border: 0;}
 table.schedule thead th { padding: 10px 0; font-weight: normal; text-transform: capitalize; background-color: #E6E6E6;}
-table.schedule th.today { color: #369ED3; border: 1px solid #369ED3; border-bottom: 0; font-weight: bold; }
-table.schedule td.today { background: none; border: 1px solid #369ED3; border-top: 0;}
-table.schedule td { border: 1px solid #EEEEEE;}
+table.schedule th.today { color: #369ED3; border: 1px solid #369ED3 !important; border-bottom: 0; font-weight: bold; }
+table.schedule td.today { background: none; border: 1px solid #369ED3 !important; border-top: 0;}
+table.schedule td { border: 1px solid #EEEEEE; }
 .controller-schedules #header { display: none; }
 .controller-schedules #main { margin-left: 15px; }
 .controller-schedules #main #content { padding: 0; }
 .controller-schedules #main #content h2 { background-color: white; background-image: none; margin: 0px; padding: 15px 0 10px 15px;}
+.controller-schedules #main #content .tabs { margin-top: 40px; }
 .controller-schedules #main #content .contextual { border: none; margin-top: 8px;}
-.controller-schedules #main #content p.buttons { position: relative; top: -55px; right: -70px; float: right; }
+.controller-schedules #main #content p.buttons { position: relative; top: 13px; /* right: -70px; */ float: right; }
 .controller-schedules #main #content p.navigate { float: none !important;}
 .controller-schedules #main #content p.navigate a { padding: 10px ; /* content: ""; */}
 .controller-schedules #main #content p.navigate a:first-of-type { float: left !important; }

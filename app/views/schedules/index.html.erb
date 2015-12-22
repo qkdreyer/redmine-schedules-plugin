@@ -23,6 +23,10 @@
         <%= select_day(@date.day, :prefix => "day", :discard_type => true) %>
         <%= select_month(@date.month, :prefix => "month", :discard_type => true) %>
         <%= select_year(@date.year, :prefix => "year", :discard_type => true) %>
+        <p class="buttons">
+            <%= link_to_function l(:button_apply), '$("#date_form").submit()', :class => 'icon icon-checked' %>
+            <%= link_to l(:button_clear), {:controller => controller_name, :action => action_name, :project_id => @project, :issue_id => @issue}, :class => 'icon icon-reload' %>
+        </p>
     </fieldset>
     <% nav_date = (@period == 'week' ? 7 : 30) %>
     <p class="navigate" style="float:right; margin:0px;">
@@ -33,10 +37,6 @@
             <%= link_to ("&#171; #{l(:label_navigation_prev_month)}").html_safe, { :year => (@date-nav_date).year, :month => (@date-nav_date).month, :day => @date.day } %>
             <%= link_to ("#{l(:label_navigation_next_month)} &#187;").html_safe, { :year => (@date+nav_date).year, :month => (@date+nav_date).month, :day => @date.day } %>
         <% end %>
-    </p>
-    <p class="buttons">
-        <%= link_to_function l(:button_apply), '$("#date_form").submit()', :class => 'icon icon-checked' %>
-        <%= link_to l(:button_clear), {:controller => controller_name, :action => action_name, :project_id => @project, :issue_id => @issue}, :class => 'icon icon-reload' %>
     </p>
 <% end %>
 
